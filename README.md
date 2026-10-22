@@ -56,6 +56,19 @@ Every value was independently verified before publishing: Net Production + LNG I
 
 The calendar and lag/rolling columns (`Year` through `Gas_RollingMean_3M`) were added as a second pass, mirroring the feature set used in the companion electricity dataset: only the columns with a genuine real-data or deterministic-arithmetic basis at this dataset's national/monthly scope were carried over (see column dictionary above for the mapping). Columns that don't have a real-data analog at this scope (e.g. Tamil Nadu festival calendar, daily weather) were left out rather than approximated — see "Related work" below for what's planned next.
 
+## Estimated daily/weekly files — read this before using them
+
+| File | Description |
+|---|---|
+| `data/daily_estimated_gas_consumption_2023.csv` | 365 rows, one per day of 2023 |
+| `data/weekly_estimated_gas_consumption_2023.csv` | 53 rows, one per 7-day block of 2023 |
+
+**These are NOT official or measured data.** PPAC does not publish Indian natural gas consumption at daily or weekly resolution — only monthly. These two files take each month's real `Total_Consumption_MMSCM` value and split it evenly across that month's days (`monthly total ÷ days in month`), then sum those daily estimates into weekly blocks. This assumes flat, unvarying consumption within a month, which is almost certainly false in reality — gas demand moves with weather, weekdays vs weekends, and industrial activity day to day, none of which this disaggregation captures.
+
+They exist only because an even split was explicitly requested as a convenience for day/week-level modeling or visualization. Verified property: every day's estimate for a month sums back exactly to that month's real total, and all 365 daily estimates sum back exactly to the real yearly total (64,417.9 MMSCM) — so no value was invented beyond the real monthly figures, but the within-month shape is a flat-line assumption, not a measurement. Do not present these as real daily/weekly consumption in any context where that distinction matters.
+
+**Yearly total (real):** summing the 12 real monthly `Total_Consumption_MMSCM` values gives **64,417.9 MMSCM** for all of 2023 — this number itself is real arithmetic on real data, unlike the daily/weekly split above.
+
 ## Source and license
 
 **Source:** Petroleum Planning & Analysis Cell (PPAC), Ministry of Petroleum & Natural Gas, Government of India — Natural Gas Consumption historical report: [ppac.gov.in/natural-gas/consumption](https://ppac.gov.in/natural-gas/consumption)

@@ -11,7 +11,7 @@ A monthly, government-sourced dataset of India's natural gas consumption for cal
 
 | File | Description |
 |---|---|
-| `data/india_natural_gas_consumption_2023.csv` | 12 monthly rows, Jan–Dec 2023, 25 columns |
+| `data/india_natural_gas_consumption_2023.csv` | 12 monthly rows, Jan–Dec 2023, 32 columns |
 
 **Supply-side columns** (production/import reconciliation)
 - `Month` — calendar month, `YYYY-MM`
@@ -34,6 +34,17 @@ A monthly, government-sourced dataset of India's natural gas consumption for cal
 - `Gas_RollingMean_3M` — mean of the current and prior 2 months' total consumption. Blank for Jan–Feb (fewer than 3 months available). This is the analog of `Energy_RollingMean_7D/14D/28D` in the electricity dataset.
 
 All figures are provisional, as published by the source. The calendar and lag/rolling columns are exact arithmetic on those published figures — nothing estimated or modeled.
+
+**Holiday calendar column** (real — Government of India official source)
+- `National_Holiday_Count` — number of gazetted Central Government holidays falling in that month, per the DoPT (Department of Personnel & Training) Office Memorandum dated 16.06.2022, the official list of 17 gazetted holidays for Central Government offices in 2023. Cross-checked against a second independent published list; the two agree except for a well-known India-specific quirk (Janmashtami has two traditional dates — Smarta and Vaishnava — and DoPT's official list uses only the Vaishnava date), which is why this dataset follows the official DoPT count rather than the larger unofficial list.
+
+**Weather columns** (real — India Meteorological Department, IMD)
+- `All_India_Mean_Temp_C` — all-India area-averaged mean temperature for the month, °C (normal base 1981–2010), from IMD's monthly climate summary press releases.
+- `All_India_Rainfall_mm` — all-India area-weighted rainfall for the month, mm (normal/LPA base 1971–2020; June–September figures are the finalized values from IMD's Annual Climate Summary 2023 monsoon table, which differ very slightly from the provisional monthly press-release figures — the same kind of two-report discrepancy noted above for gas consumption).
+- `Weather_Data_Status` — honest status per row: 9 months are fully verified against an official IMD monthly climate summary; September has verified rainfall but no mean-temperature figure yet located; **November and December are blank** — IMD's specific monthly summary documents for these two months could not be located despite an extensive search, so the cells are left empty rather than estimated. This mirrors the one documented missing value in the companion electricity dataset: a gap is flagged, not filled.
+
+**Extreme weather columns** (real, documented events — no synthetic flagging)
+- `Extreme_Weather_Flag` (0/1) and `Extreme_Weather_Type` — whether a major, independently documented extreme weather event affected India that month, and which one (named cyclones with landfall dates, the record Delhi/Yamuna flood, the Sikkim glacial lake outburst flood, and IMD's own "warmest month on record" findings for Aug/Sep/Nov 2023). Sourced from IMD press materials, Wikipedia's cyclone pages (cross-checked against news coverage), and Down To Earth's climate reporting. January and February 2023 have no flagged event because no major nationally-documented extreme weather event was found for those two months specifically — this is a deliberate absence, not an oversight.
 
 ## How it was built
 

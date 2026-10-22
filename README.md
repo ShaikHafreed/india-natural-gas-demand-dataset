@@ -11,7 +11,7 @@ A monthly, government-sourced dataset of India's natural gas consumption for cal
 
 | File | Description |
 |---|---|
-| `data/india_natural_gas_consumption_2023.csv` | 12 monthly rows, Jan–Dec 2023, 16 columns |
+| `data/india_natural_gas_consumption_2023.csv` | 12 monthly rows, Jan–Dec 2023, 25 columns |
 
 **Supply-side columns** (production/import reconciliation)
 - `Month` — calendar month, `YYYY-MM`
@@ -25,7 +25,15 @@ A monthly, government-sourced dataset of India's natural gas consumption for cal
 
 **A note on the two totals:** `Total_Consumption_MMSCM` (supply-side) and `Sectoral_Total_Check_MMSCM` (demand-side, company-reported) differ by roughly 1–2% month to month (e.g. Jan 2023: 4,822.62 vs. 4,905.72). This is not an error — they come from two different official PPAC reporting methods (production+import reconciliation vs. direct company reporting) that don't perfectly reconcile, as PPAC's own notes acknowledge ("totals may not tally due to rounding off"). Both are published as-is; neither has been adjusted to match the other.
 
-All figures are provisional, as published by the source.
+**Calendar / cyclical columns** (computed from the `Month` column — no external data, deterministic)
+- `Year`, `Month_Num` (1–12), `Month_Name`
+- `Month_Sin`, `Month_Cos` — cyclical encoding of the month (`sin/cos(2π·Month_Num/12)`), so a model sees December and January as adjacent rather than far apart. This is the monthly-resolution analog of `Day_of_Year_Sin/Cos` in the companion electricity dataset.
+
+**Lag / rolling columns** (derived from this dataset's own real `Total_Consumption_MMSCM` values — no external data)
+- `Gas_Lag_1M`, `Gas_Lag_2M`, `Gas_Lag_3M` — total consumption 1/2/3 months prior. Blank where there's no prior month in this 12-month series (e.g. `Gas_Lag_3M` is blank for Jan–Mar).
+- `Gas_RollingMean_3M` — mean of the current and prior 2 months' total consumption. Blank for Jan–Feb (fewer than 3 months available). This is the analog of `Energy_RollingMean_7D/14D/28D` in the electricity dataset.
+
+All figures are provisional, as published by the source. The calendar and lag/rolling columns are exact arithmetic on those published figures — nothing estimated or modeled.
 
 ## How it was built
 
@@ -34,6 +42,8 @@ Calendar-year 2023 spans two Indian fiscal years (April–March), so this datase
 - April–December 2023 from PPAC's "Month wise 2023-24" consumption report, and "NG-H-SC FY 2023-24" sectoral consumption report
 
 Every value was independently verified before publishing: Net Production + LNG Import = Total Consumption for all 12 months, and the sum of all 12 sector columns matches PPAC's own reported monthly Total row exactly, for every month. No values were estimated, interpolated, or formula-generated — everything here is as published by PPAC.
+
+The calendar and lag/rolling columns (`Year` through `Gas_RollingMean_3M`) were added as a second pass, mirroring the feature set used in the companion electricity dataset: only the columns with a genuine real-data or deterministic-arithmetic basis at this dataset's national/monthly scope were carried over (see column dictionary above for the mapping). Columns that don't have a real-data analog at this scope (e.g. Tamil Nadu festival calendar, daily weather) were left out rather than approximated — see "Related work" below for what's planned next.
 
 ## Source and license
 

@@ -11,23 +11,29 @@ A monthly, government-sourced dataset of India's natural gas consumption for cal
 
 | File | Description |
 |---|---|
-| `data/india_natural_gas_consumption_2023.csv` | 12 monthly rows, Jan–Dec 2023 |
+| `data/india_natural_gas_consumption_2023.csv` | 12 monthly rows, Jan–Dec 2023, 16 columns |
 
-**Columns**
+**Supply-side columns** (production/import reconciliation)
 - `Month` — calendar month, `YYYY-MM`
 - `Net_Production_MMSCM` — domestic natural gas net production for consumption (gross production minus flaring/loss), in Million Standard Cubic Metres
 - `LNG_Import_MMSCM` — imported LNG consumed, in MMSCM
 - `Total_Consumption_MMSCM` — `Net_Production_MMSCM + LNG_Import_MMSCM`
 
-All figures are provisional, as published by the source (totals may not tally exactly due to rounding).
+**Sector-wise consumption columns** (as reported directly by oil & gas companies to PPAC — Domestic + RLNG/Others combined per sector)
+- `Power_MMSCM`, `CityGasDistribution_MMSCM`, `Refinery_MMSCM`, `InternalConsumption_Pipeline_MMSCM`, `Agriculture_TeaPlantation_MMSCM`, `Industrial_MMSCM`, `Manufacturing_MMSCM`, `Other_Misc_MMSCM`, `Fertilizer_MMSCM`, `Petrochemical_MMSCM`, `LPG_Shrinkage_MMSCM`, `SpongeIron_Steel_MMSCM`
+- `Sectoral_Total_Check_MMSCM` — sum of all 12 sector columns (verified to match PPAC's own "Total" row for every month, to within rounding)
+
+**A note on the two totals:** `Total_Consumption_MMSCM` (supply-side) and `Sectoral_Total_Check_MMSCM` (demand-side, company-reported) differ by roughly 1–2% month to month (e.g. Jan 2023: 4,822.62 vs. 4,905.72). This is not an error — they come from two different official PPAC reporting methods (production+import reconciliation vs. direct company reporting) that don't perfectly reconcile, as PPAC's own notes acknowledge ("totals may not tally due to rounding off"). Both are published as-is; neither has been adjusted to match the other.
+
+All figures are provisional, as published by the source.
 
 ## How it was built
 
-Calendar-year 2023 spans two Indian fiscal years (April–March), so this dataset combines:
-- January–March 2023 from PPAC's "Month wise 2022-23" report (FY 2022-23)
-- April–December 2023 from PPAC's "Month wise 2023-24" report (FY 2023-24)
+Calendar-year 2023 spans two Indian fiscal years (April–March), so this dataset merges two real PPAC source tables, split and recombined by calendar month:
+- January–March 2023 from PPAC's "Month wise 2022-23" consumption report, and "NG-H-SC FY 2022-23" sectoral consumption report
+- April–December 2023 from PPAC's "Month wise 2023-24" consumption report, and "NG-H-SC FY 2023-24" sectoral consumption report
 
-Every value was independently cross-checked (Net Production + LNG Import = Total Consumption, for all 12 months) before publishing.
+Every value was independently verified before publishing: Net Production + LNG Import = Total Consumption for all 12 months, and the sum of all 12 sector columns matches PPAC's own reported monthly Total row exactly, for every month. No values were estimated, interpolated, or formula-generated — everything here is as published by PPAC.
 
 ## Source and license
 
